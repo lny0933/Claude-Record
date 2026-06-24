@@ -1,0 +1,252 @@
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:2:import { useCallback, useMemo, useRef, useState } from 'react'
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:3:import { useTranslation } from 'react-i18next'
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:4:import { useNavigate } from 'react-router-dom'
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:5:import { useRequest } from 'ahooks'
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:6:import {
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:7:  Alert,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:8:  Badge,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:9:  Button,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:10:  DatePicker,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:11:  Form,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:12:  Input,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:13:  Select,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:14:  Space,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:15:} from '@arco-design/web-react'
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:16:import type { TableColumnProps } from '@arco-design/web-react'
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:17:import {
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:18:  IconExclamationCircle,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:19:  IconEye,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:20:  IconSearch,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:21:  IconStamp,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:22:} from '@arco-design/web-react/icon'
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:23:import { renderEllipsisText } from '@common/components/EllipsisText'
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:24:import FullScreenTableSection from '@common/components/FullScreenTableSection'
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:25:import ListFilterHseForm from '@common/components/ListFilterHseForm'
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:26:import PageWrapper from '@common/components/PageWrapper'
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:27:import UnifiedTableStyle from '@common/components/UnifiedTableStyle'
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:28:import { tableHeaderCellStyle } from '@/constants/table'
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:29:import { getSecurityPatrolPageRequest } from '@/service'
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:30:import { handelFieldNameShow } from '@/utils/tools.ts'
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:31:import type {
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:32:  PatrolPageItem,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:33:  PatrolPageResponse,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:34:  SecurityPatrolPageFilterValues,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:35:  SecurityPatrolPageParams,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:36:  SecurityPatrolRecordRow,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:37:  SecurityPatrolStatus,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:38:} from '@/types/securityPatrol'
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:39:
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:40:const classPrefix = 'security-patrol-records'
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:41:
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:42:const statusColorMap: Record<SecurityPatrolStatus, string> = {
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:43:  draft: 'gray',
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:44:  underReview: 'orangered',
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:45:  approved: 'green',
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:46:  rejected: 'red',
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:47:}
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:48:
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:49:const PATROL_STATUS_CODE = {
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:50:  DRAFT: 0,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:51:  UNDER_REVIEW: 1,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:52:  APPROVED: 2,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:53:  REJECTED: 3,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:54:} as const
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:55:
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:56:const PATROL_STATUS_CODE_TO_KEY: Record<number, SecurityPatrolStatus> = {
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:57:  [PATROL_STATUS_CODE.DRAFT]: 'draft',
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:58:  [PATROL_STATUS_CODE.UNDER_REVIEW]: 'underReview',
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:59:  [PATROL_STATUS_CODE.APPROVED]: 'approved',
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:60:  [PATROL_STATUS_CODE.REJECTED]: 'rejected',
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:61:}
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:62:
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:63:const SHIFT_CODE_TO_KEY = {
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:64:  1: 'day',
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:65:  2: 'night',
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:66:} as const
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:67:
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:68:const formatPatrolDateParam = (value?: unknown) => {
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:69:  if (!value) return undefined
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:70:  if (typeof value === 'string') {
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:71:    if (value.includes('/')) return value
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:72:    const [year, month, day] = value.split('-')
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:73:    return year && month && day ? `${day}/${month}/${year}` : value
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:74:  }
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:75:  const formatter = value as { format?: (format: string) => string }
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:76:  return typeof formatter.format === 'function'
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:77:    ? formatter.format('DD/MM/YYYY')
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:78:    : undefined
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:79:}
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:80:
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:81:const toPatrolRecordRow = (item: PatrolPageItem): SecurityPatrolRecordRow => ({
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:82:  patrolId: item.patrolId,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:83:  patrolDate: item.patrolDate,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:84:  shift: SHIFT_CODE_TO_KEY[item.shift as keyof typeof SHIFT_CODE_TO_KEY],
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:85:  inspector: item.inspector,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:86:  inspectorName: item.inspectorName || '',
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:87:  inspectorNameAr: item.inspectorNameAr,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:88:  status: PATROL_STATUS_CODE_TO_KEY[item.status ?? 0] || 'draft',
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:89:  statusCode: item.status,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:90:  issuesObserved: item.issuesObserved,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:91:  code: item.code,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:92:})
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:93:
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:94:const SecurityPatrolRecords = () => {
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:95:  const { t } = useTranslation(['securityPatrol', 'common'])
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:96:  const navigate = useNavigate()
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:97:  const tableRef = useRef<any>(null)
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:98:  const filtersRef = useRef<SecurityPatrolPageFilterValues>({})
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:99:  const [, setFilters] = useState<SecurityPatrolPageFilterValues>({})
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:100:
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:101:  const { runAsync: runPatrolPage } = useRequest(getSecurityPatrolPageRequest, {
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:102:    manual: true,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:103:  })
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:104:
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:105:  const statusOptions = useMemo(
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:106:    () => [
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:107:      {
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:108:        label: t('securityPatrol:status.draft'),
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:109:        value: PATROL_STATUS_CODE.DRAFT,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:110:      },
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:111:      {
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:112:        label: t('securityPatrol:status.underReview'),
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:113:        value: PATROL_STATUS_CODE.UNDER_REVIEW,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:114:      },
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:115:      {
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:116:        label: t('securityPatrol:status.approved'),
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:117:        value: PATROL_STATUS_CODE.APPROVED,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:118:      },
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:119:      {
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:120:        label: t('securityPatrol:status.rejected'),
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:121:        value: PATROL_STATUS_CODE.REJECTED,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:122:      },
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:123:    ],
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:124:    [t],
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:125:  )
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:126:
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:127:  const getList = useCallback(
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:128:    async (params?: SecurityPatrolPageParams) => {
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:129:      const pageNum = params?.pageNum || 1
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:130:      const pageSize = params?.pageSize || 10
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:131:      const filters = filtersRef.current
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:132:      const req = {
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:133:        pageNum,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:134:        pageSize,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:135:        status: filters.status,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:136:        shift: filters.shift,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:137:        keyword: filters.keyword,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:138:        startDate: filters.patrolDate?.startTime,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:139:        endDate: filters.patrolDate?.endTime,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:140:      }
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:141:
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:142:      try {
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:143:        const res = (await runPatrolPage(req)) as PatrolPageResponse
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:144:        return {
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:145:          list: (res?.list || []).map(toPatrolRecordRow),
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:146:          total: res?.total || 0,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:147:          pageNum,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:148:          pageSize,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:149:        }
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:150:      } catch {
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:151:        return {
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:152:          list: [],
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:153:          total: 0,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:154:          pageNum,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:155:          pageSize,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:156:        }
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:157:      }
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:158:    },
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:159:    [runPatrolPage],
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:160:  )
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:161:
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:162:  const handleSubmit = (values: SecurityPatrolPageFilterValues) => {
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:163:    const nextFilters = values || {}
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:164:    filtersRef.current = nextFilters
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:165:    setFilters(nextFilters)
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:166:    tableRef.current?.setPageNum?.(1)
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:167:    tableRef.current?.refresh?.()
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:168:  }
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:169:
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:170:  const handleReset = () => {
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:171:    filtersRef.current = {}
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:172:    setFilters({})
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:173:    tableRef.current?.setPageNum?.(1)
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:174:    tableRef.current?.refresh?.()
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:175:  }
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:176:
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:177:  const columns: TableColumnProps<SecurityPatrolRecordRow>[] = useMemo(
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:178:    () => [
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:179:      {
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:180:        title: t('securityPatrol:patrolRecords.columns.patrolId'),
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:181:        dataIndex: 'code',
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:182:        width: 170,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:183:        headerCellStyle: tableHeaderCellStyle,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:184:        render: (value) => renderEllipsisText(value || '-'),
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:185:      },
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:186:      {
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:187:        title: t('securityPatrol:patrolRecords.columns.patrolDate'),
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:188:        dataIndex: 'patrolDate',
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:189:        width: 170,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:190:        headerCellStyle: tableHeaderCellStyle,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:191:        render: renderEllipsisText,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:192:      },
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:193:      {
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:194:        title: t('securityPatrol:patrolRecords.columns.shift'),
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:195:        dataIndex: 'shift',
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:196:        width: 150,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:197:        headerCellStyle: tableHeaderCellStyle,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:198:        render: (value: SecurityPatrolRecordRow['shift']) =>
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:199:          value ? t(`securityPatrol:shift.${value}`) : '-',
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:200:      },
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:201:      {
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:202:        title: t('securityPatrol:patrolRecords.columns.patroller'),
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:203:        dataIndex: 'inspectorName',
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:204:        width: 240,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:205:        headerCellStyle: tableHeaderCellStyle,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:206:        render: (_value, record) =>
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:207:          renderEllipsisText(record?.inspector || '-'),
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:208:      },
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:209:      {
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:210:        title: t('securityPatrol:patrolRecords.columns.issues'),
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:211:        dataIndex: 'issuesObserved',
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:212:        width: 140,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:213:        headerCellStyle: tableHeaderCellStyle,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:214:        render: (value) => value ?? 0,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:215:      },
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:216:      {
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:217:        title: t('securityPatrol:patrolRecords.columns.status'),
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:218:        dataIndex: 'status',
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:219:        width: 180,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:220:        headerCellStyle: tableHeaderCellStyle,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:221:        render: (value: SecurityPatrolStatus) => (
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:222:          <Badge
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:223:            color={statusColorMap[value]}
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:224:            text={t(`securityPatrol:status.${value}`)}
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:225:          />
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:226:        ),
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:227:      },
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:228:      {
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:229:        title: t('securityPatrol:patrolRecords.columns.action'),
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:230:        dataIndex: 'action',
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:231:        width: 120,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:232:        fixed: 'right',
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:233:        headerCellStyle: tableHeaderCellStyle,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:234:        render: (_value, record) => {
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:235:          const reviewable = record.status === 'underReview'
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:236:          const actionType = reviewable ? 'review' : 'view'
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:237:          return (
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:238:            <Button
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:239:              type='text'
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:240:              size='mini'
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:241:              className={`${classPrefix}__action-btn`}
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:242:              onClick={() =>
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:243:                navigate(
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:244:                  `/security-patrol/patrol-records/${actionType}/${record.patrolId}/${record.status}`,
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:245:                )
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:246:              }
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:247:            >
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:248:              <Space size={4}>
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:249:                {reviewable ? <IconStamp /> : <IconEye />}
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:250:                <span>
+src\pages\SecurityPatrol\PatrolRecords\index.tsx:251:                  {t(
+
+[Showing results with pagination = limit: 250]
